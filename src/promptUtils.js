@@ -66,6 +66,7 @@ export const getUserPrompt = (cvPoint, targetDomain, jobDescription) => {
     ${jobDescription}
     
     Please:
+    Take time to give your response.
     Link the Cv point with job requirements to give the output.
     Translate using ${targetDomain} terminology while preserving authenticity
     Highlight quantitative achievements
@@ -77,10 +78,11 @@ export const getUserPrompt = (cvPoint, targetDomain, jobDescription) => {
     Do not make up your own facts. 
     
 
-    If CV point does not make sense, then the translatedPoint will be "NA" in the json format below
+    If CV point does not make sense or doesn't seem like a cv point
+    , then the translatedPoint will be "NA" in the json format below
 
     Respond in the following JSON format:
-    
+
     CV Point: "I led the netzero initiative at IBM"
     Job Description: "Looking for a Product Manager with experience in Excel and Mysql"
     Example Output:
