@@ -54,8 +54,10 @@ router.post('/translate', validateSingleTranslation, async (req, res) => {
                 { role: "user", content: getUserPrompt(cvPoint, targetDomain, jobDescription) }
             ]
         });
-
+        console.log("///////////////////////////////////");
+        console.log(cvPoint, targetDomain, jobDescription);
         console.log(message.content[0].text);
+        console.log("///////////////////////////////////");
         const response = JSON.parse(parseResponse(message.content[0].text));
         
 
