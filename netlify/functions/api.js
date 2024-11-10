@@ -55,8 +55,9 @@ router.post('/translate', validateSingleTranslation, async (req, res) => {
             ]
         });
 
+        console.log(message.content[0].text);
         const response = JSON.parse(parseResponse(message.content[0].text));
-        console.log(response.translatedPoint);
+        
 
         res.json({
             translatedPoint: response.translatedPoint,
