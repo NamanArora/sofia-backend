@@ -8,8 +8,9 @@ import { buildPrompt, parseResponse, getSystemPrompt, getUserPrompt } from '../.
 import 'dotenv/config'
 
 const app = express();
+const router = express.Router();
 
-// Initialize Anthropic client
+// // Initialize Anthropic client
 const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -21,6 +22,14 @@ app.use(cors({
     methods: ['POST'],
 }));
 
+
+app.use((req, res, next) => {
+    console.log('Request Path:', req.path);
+    console.log('Request Method:', req.method);
+    next();
+});
+
+
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -31,7 +40,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Single translation endpoint
-app.post('/api/translate', validateSingleTranslation, async (req, res) => {
+router.post('/translate', validateSingleTranslation, async (req, res) => {
     // return res.json(mockSingleResponse());
 
     try {
@@ -60,8 +69,8 @@ app.post('/api/translate', validateSingleTranslation, async (req, res) => {
     }
 });
 
-// Bulk translation endpoint
-app.post('/api/translate-bulk', validateBulkTranslation, async (req, res) => {
+// // Bulk translation endpoint
+router.post('/translate-bulk', validateBulkTranslation, async (req, res) => {
     // return res.json(mockBulkResponse());
     try {
         const { cvPoints, targetDomain, jobDescription } = req.body;
@@ -98,15 +107,17 @@ app.post('/api/translate-bulk', validateBulkTranslation, async (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+router.get('/health', (req, res) => {
     res.json({
         status: 'healthy',
         timestamp: new Date().toISOString()
     });
 });
 
+
+
 // Optional: More detailed health check if needed
-app.get('/api/health/detailed', (req, res) => {
+router.get('/health/detailed', (req, res) => {
     // You could add more checks here as needed
     const health = {
         status: 'healthy',
@@ -128,5 +139,87 @@ app.get('/api/health/detailed', (req, res) => {
     res.json(health);
 });
 
+// Base path handler
+router.get('/', (req, res) => {
+    res.json({ message: 'API is running' });
+});
+
+router.get("/hello", (req, res) => res.send("Hello World!"));
+
+
+router.use('*', (req, res) => {
+    console.log(req);
+    res.json({
+        error: 'Route not found',
+        path: req.path,
+        method: req.method
+    });
+});
+
 // Export the handler
-exports.handler = serverless(app);
+app.use('/api', router);
+export const handler = serverless(app);
+
+
+// import express from 'express';
+// import cors from 'cors';
+// import serverless from 'serverless-http';
+
+// const app = express();
+// const router = express.Router();
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Debugging middleware for the main app
+// app.use((req, res, next) => {
+//     console.log('App Level - Original URL:', req.originalUrl);
+//     console.log('App Level - Base URL:', req.baseUrl);
+//     console.log('App Level - Path:', req.path);
+//     next();
+// });
+
+// // Debugging middleware for the router
+// router.use((req, res, next) => {
+//     console.log('Router Level - Original URL:', req.originalUrl);
+//     console.log('Router Level - Base URL:', req.baseUrl);
+//     console.log('Router Level - Path:', req.path);
+//     next();
+// });
+
+// // Routes
+// router.get('/hello', (req, res) => {
+//     console.log('Hello route hit');
+//     res.json({ message: "Hello World!" });
+// });
+
+// router.get('/health', (req, res) => {
+//     console.log('Health route hit');
+//     res.json({
+//         status: 'healthy',
+//         timestamp: new Date().toISOString()
+//     });
+// });
+
+// // Catch-all route
+// router.use('*', (req, res) => {
+//     console.log('Catch-all route hit with:', {
+//         originalUrl: req.originalUrl,
+//         baseUrl: req.baseUrl,
+//         path: req.path
+//     });
+//     res.json({
+//         error: 'Route not found',
+//         originalUrl: req.originalUrl,
+//         baseUrl: req.baseUrl,
+//         path: req.path,
+//         method: req.method
+//     });
+// });
+
+// // Mount the router at /api
+// app.use('/api', router);
+
+// // Export the handler
+// export const handler = serverless(app);
