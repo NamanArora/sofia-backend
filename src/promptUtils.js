@@ -75,7 +75,6 @@ export const getUserPrompt = (cvPoint, targetDomain, jobDescription) => {
     Do not make up data unless it has been provided. 
     Only use numbers from the CV point given.
     Do not make up your own facts. 
-    Use STAR methodology when making translations. 
     
 
     If CV point does not make sense, then the translatedPoint will be "NA" in the json format below
