@@ -3,8 +3,8 @@ import cors from 'cors';
 import serverless from 'serverless-http';
 import Anthropic from '@anthropic-ai/sdk';
 import rateLimit from 'express-rate-limit';
-import { validateSingleTranslation, validateBulkTranslation } from '../../src/validators.js';
-import { buildPrompt, parseResponse, getSystemPrompt, getUserPrompt } from '../../src/promptUtils.js';
+import { validateSingleTranslation, validateBulkTranslation, validateStarPoint } from '../../src/validators.js';
+import { buildPrompt, parseResponse, getSystemPrompt, getUserPrompt, getSystemPromptForStar, getUserPromptForStar } from '../../src/promptUtils.js';
 import 'dotenv/config'
 
 const app = express();
@@ -39,6 +39,36 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+router.post('/star', validateStarPoint, async (req, res) => {
+    try {
+        const { cvPoint, context } = req.body;
+        const message = await anthropic.messages.create({
+            model: "claude-3-haiku-20240307",
+            max_tokens: 1024,
+            temperature: 0.7,
+            system: getSystemPromptForStar(),
+            messages: [
+                { role: "user", content: getUserPromptForStar(cvPoint, context) }
+            ]
+        });
+        console.log("///////////////////////////////////");
+        console.log(cvPoint, context);
+        console.log(message.content[0].text);
+        console.log("///////////////////////////////////");
+        const response = JSON.parse(parseResponse(message.content[0].text));
+
+
+        res.json({
+            transformedPoint: response.transformedPoint,
+            followsStar: response.analysis.followsSTAR,
+            missingElements: response.analysis.missingElements,
+        });
+    } catch (error) {
+        console.error('Translation error:', error);
+        res.status(500).json({ error: 'Failed to format in STAR' });
+    }
+});
+
 // Single translation endpoint
 router.post('/translate', validateSingleTranslation, async (req, res) => {
     // return res.json(mockSingleResponse());
@@ -59,7 +89,7 @@ router.post('/translate', validateSingleTranslation, async (req, res) => {
         console.log(message.content[0].text);
         console.log("///////////////////////////////////");
         const response = JSON.parse(parseResponse(message.content[0].text));
-        
+
 
         res.json({
             translatedPoint: response.translatedPoint,
