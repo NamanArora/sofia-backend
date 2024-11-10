@@ -69,7 +69,7 @@ export const getUserPrompt = (cvPoint, targetDomain, jobDescription) => {
     Translate using {targetDomain} terminology while preserving authenticity
     Highlight quantitative achievements
     Add domain-specific metrics when relevant
-    If CV point does not make sense, or you don't know how to convert it, then you can say "I dont know"
+    If CV point does not make sense, then the translatedPoint will be "NA" in the json format below
 
     Respond in the following JSON format:
     {
