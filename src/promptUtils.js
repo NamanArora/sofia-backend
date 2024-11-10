@@ -80,28 +80,7 @@ export const getUserPrompt = (cvPoint, targetDomain, jobDescription) => {
     If CV point does not make sense, then the translatedPoint will be "NA" in the json format below
 
     Respond in the following JSON format:
-    {
-        "translatedPoint": "string",  // The translated CV point
-        "domainAlignment": [        // list of domain-relevant elements highlighted
-            "string"
-        ]
-        "preservedElements": [        // List of key elements maintained from original
-            "string"
-        ]
-    }
-    Example Input:
-    CV Point: "Led sustainability audit for 15 manufacturing plants, reducing carbon emissions by 55% through implementation of renewable energy solutions and waste reduction initiatives"
-    Job Description: "Looking for a Product Manager with experience in large-scale project management, cross-functional leadership, and proven track record of delivering measurable impact. Must have experience in data analysis and stakeholder management."
-    Example Output:
-    {
-        "translatedPoint": "Led cross-functional teams across 15 sites to deliver high-impact sustainability product initiatives, analyzing operational data to drive 55% efficiency improvements",
-        "domainAlignment": ["Led cross-functional teams", "analyzing data to drive improvements"],
-        "preservedElements": [
-        "15 sites scope",
-        "25% improvement metric",
-        ]
-    }
-
+    
     CV Point: "I led the netzero initiative at IBM"
     Job Description: "Looking for a Product Manager with experience in Excel and Mysql"
     Example Output:
